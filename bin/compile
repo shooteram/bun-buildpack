@@ -41,5 +41,12 @@ log "Configuring Bun cache directory: $BUN_CACHE_DIR"
 log "Performing deterministic install"
 bun install --frozen-lockfile
 
+if [[ -f "package.json" ]] && jq -e '.scripts.build' package.json > /dev/null 2>&1; then
+  log "Running build script..."
+  bun run build
+else
+  log "No build script found in package.json, skipping build step"
+fi
+
 log "Bun install completed successfully"
 log "Cache location: $BUN_CACHE_DIR"
