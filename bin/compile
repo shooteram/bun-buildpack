@@ -1,0 +1,48 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+source "$(dirname $0)/common"
+
+BUILD_DIR=$1
+CACHE_DIR=$2
+ENV_DIR=$3
+
+mkdir -p "$CACHE_DIR"
+
+BUN_CACHE_DIR="$CACHE_DIR/bun"
+mkdir -p "$BUN_CACHE_DIR"
+
+export BUN_INSTALL_CACHE_DIR="$BUN_CACHE_DIR"
+
+log "Starting Bun install..."
+
+cd "$BUILD_DIR"
+
+if ! command -v bun &> /dev/null; then
+  log "Installing Bun..."
+
+  curl -fsSL https://bun.sh/install | bash
+
+  export BUN_INSTALL="$HOME/.bun"
+  export PATH="$BUN_INSTALL/bin:$PATH"
+
+  if ! command -v bun &> /dev/null; then
+    log "ERROR: Failed to install Bun"
+    exit 1
+  fi
+fi
+
+bun_version=$(bun --version)
+log "Using Bun version: $bun_version"
+
+log "Configuring Bun cache directory: $BUN_CACHE_DIR"
+
+log "Performing deterministic install"
+bun install --frozen-lockfile
+
+echo "export PATH=$(dirname $(which bun)):\$PATH" > "$BUILD_DIR/.profile.d/bun.sh"
+echo "export BUN_INSTALL_CACHE_DIR=$BUN_CACHE_DIR" >> "$BUILD_DIR/.profile.d/bun.sh"
+
+log "Bun install completed successfully"
+log "Cache location: $BUN_CACHE_DIR"

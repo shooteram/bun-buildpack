@@ -1,0 +1,28 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+source "$(dirname $0)/common"
+
+BUILD_DIR=$1
+
+log "Configuring runtime environment for bun"
+
+mkdir -p "$BUILD_DIR/.profile.d"
+
+cat > "$BUILD_DIR/.profile.d/bun.sh" <<'EOF'
+#!/bin/bash
+
+export PATH=$(dirname $(which bun)):$PATH
+export BUN_INSTALL_CACHE_DIR=/app/tmp/cache/bun
+
+if [[ -z "$NODE_OPTIONS" ]]; then
+  export NODE_OPTIONS="--max-old-space-size=2560"
+fi
+
+if [[ -z "$NODE_ENV" ]]; then
+  export NODE_ENV="production"
+fi
+EOF
+
+log "Runtime configuration complete"
