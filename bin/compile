@@ -22,7 +22,7 @@ cd "$BUILD_DIR"
 if ! command -v bun &> /dev/null; then
   log "Installing Bun..."
 
-  curl -fsSL https://bun.sh/install | bash
+  curl -fsSL https://bun.sh/install | bash > /dev/null 2>&1
 
   export BUN_INSTALL="$HOME/.bun"
   export PATH="$BUN_INSTALL/bin:$PATH"
@@ -40,9 +40,6 @@ log "Configuring Bun cache directory: $BUN_CACHE_DIR"
 
 log "Performing deterministic install"
 bun install --frozen-lockfile
-
-echo "export PATH=$(dirname $(which bun)):\$PATH" > "$BUILD_DIR/.profile.d/bun.sh"
-echo "export BUN_INSTALL_CACHE_DIR=$BUN_CACHE_DIR" >> "$BUILD_DIR/.profile.d/bun.sh"
 
 log "Bun install completed successfully"
 log "Cache location: $BUN_CACHE_DIR"
