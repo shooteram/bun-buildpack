@@ -1,15 +1,10 @@
 #!/usr/bin/env bash
 
-set -euo pipefail
+BUILD_DIR=${1:-}
 
-source "$(dirname $0)/common"
-
-log "Detecting Bun project..."
-
-if [[ -f "$1/bun.lockb" ]] || [[ -f "$1/bun.lock" ]]; then
-  log "Bun lock file found"
+if [ -f "${BUILD_DIR}/bun.lockb" ] || [ -f "${BUILD_DIR}/bun.lock" ]; then
+  echo "Bun"
   exit 0
 fi
 
-log "No bun-specific files or dependencies detected"
 exit 1
